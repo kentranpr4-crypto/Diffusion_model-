@@ -1,0 +1,7 @@
+# Versions recorded on the preparation machine (CPU run of the full test-suite). Runtime dependencies only.
+# torch: the wheel/CUDA build must match the GPU machine; scripts/setup_env.sh probes and falls back if needed.
+numpy==2.5.3
+pyyaml==6.0.3
+mujoco==4.0.1
+safetensors==0.8.0
+torch==2.15.0

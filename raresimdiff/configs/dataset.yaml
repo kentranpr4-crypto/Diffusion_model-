@@ -1,0 +1,19 @@
+dataset:
+  name: raresimdiff_v1
+  base_seed: 20261121
+  n_parents: 25000              # parents x variants_per_parent ~= scenarios BEFORE validation/dedup
+  variants_per_parent: 4
+  ood_parent_fraction: 0.08    # parents built from held-out corner recipes -> `ood_test` split only
+  split_fractions: {train: 0.80, val: 0.10, test: 0.10}   # decided per PARENT (hash), never per scenario
+  event_weights: null          # null -> generator defaults (see scenarios/generator.py)
+  workers: 4
+  store_trajectories: {train: 0.01, val: 0.05, test: 0.10, ood_test: 0.20}   # fraction of episodes with stored trajectories
+  trajectory_shard_size: 2000
+  out_dir: data/raresimdiff_v1
+simulation:
+  timestep: 0.004
+  control_dt: 0.02
+  settle_time: 0.5
+  penetration_tol: 0.004
+validation:
+  repair_threshold: 0.35

@@ -1,0 +1,19 @@
+# Documentation of the MVP scenario families (the authoritative bounds live in scenarios/schema.py).
+families:
+  A_manipulation_disturbance:
+    task: grasp_lift
+    events: [object_slip, slip_and_perception]
+    dynamics_params: [friction_multiplier, disturbance_force, disturbance_dir, object friction/mass/pose, clutter]
+  B_dynamic_obstacle:
+    task: navigate
+    events: [moving_obstacle]
+    dynamics_params: [obstacle x0 y0 vx vy half_size delay, event_onset, event_duration]
+  C_perception_degradation:
+    task: grasp_lift
+    events: [perception_degradation, slip_and_perception]
+    perception_only_params: [sensor_noise_std, occlusion_dropout_prob, visibility_range, calib_yaw_err, calib_tx, calib_ty]
+    note: perception parameters change the OBSERVATION only (cosmetic w.r.t. dynamics); they alter task difficulty through the policy.
+severity_definition: scenarios/severity.py (deterministic function of physical parameters)
+ood_recipe:
+  grasp_lift: {target_mass: [0.85, 1.15], target_friction: [0.05, 0.20], clutter_objects: [4, 5], variant_severity: [0.7, 1.0]}
+  navigate: {floor_clutter_objects: [4, 5], variant_severity: [0.7, 1.0]}

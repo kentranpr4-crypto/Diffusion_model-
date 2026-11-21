@@ -1,0 +1,17 @@
+# RareScenarioDiT + diffusion process. Starting engineering values, NOT verified optimal.
+model:
+  hidden_dim: 256
+  num_layers: 6
+  num_heads: 8
+  mlp_ratio: 4.0
+  dropout: 0.0
+diffusion:
+  num_timesteps: 1000
+  schedule: cosine          # Nichol & Dhariwal cosine schedule
+  prediction: epsilon
+  sampler: ddim
+  ddim_steps: 50            # initial inference setting (20-50)
+  ddim_eta: 0.0
+  cfg_scale: 1.5            # classifier-free guidance at inference
+  p_uncond: 0.1             # conditioning dropout probability during training
+  clip_x0: true             # clip predicted x0 to the bounds-implied range
