@@ -8,7 +8,8 @@
 | model | RareScenarioDiT hidden 256, 6 layers, 8 heads |
 | optimiser | AdamW lr 0.0003, wd 0.01, warmup 1000, cosine to 0.05 |
 | batch | 512 x 2 accumulation = 1024 effective |
-| budget | 30000 optimizer steps (~419 epochs over train) |
+| effective global batch | 1024 samples/optimizer step (512 x 2) |
+| budget | 30000 optimizer steps = 30720000 samples = 419.1 epochs by samples; 419.6 epochs by the trainer's drop-last accounting (143 micro-batches/epoch) |
 | precision | bfloat16 if supported, else float32 |
 | checkpoints | every 2000 steps (keep last 3) + best-by-validation-EMA |
 | evaluation after training | 200 scenarios x 4 events x 4 severities, learned vs procedural |

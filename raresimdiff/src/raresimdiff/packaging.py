@@ -61,7 +61,8 @@ def write_run_approval(root: Path, data_dir: Path) -> Path:
 | model | RareScenarioDiT hidden {cfg.model.hidden_dim}, {cfg.model.num_layers} layers, {cfg.model.num_heads} heads |
 | optimiser | AdamW lr {tc.lr}, wd {tc.weight_decay}, warmup {tc.warmup_steps}, cosine to {tc.min_lr_ratio} |
 | batch | {tc.batch_size} x {tc.grad_accum_steps} accumulation = {eff} effective |
-| budget | {tc.max_steps} optimizer steps (~{tc.max_steps * eff / max(n_train, 1):.0f} epochs over train) |
+| effective global batch | {eff} samples/optimizer step ({tc.batch_size} x {tc.grad_accum_steps}) |
+| budget | {tc.max_steps} optimizer steps = {tc.max_steps * eff} samples = {tc.max_steps * eff / max(n_train, 1):.1f} epochs by samples; {tc.max_steps * tc.grad_accum_steps / max(n_train // tc.batch_size, 1):.1f} epochs by the trainer's drop-last accounting ({n_train // tc.batch_size} micro-batches/epoch) |
 | precision | {tc.amp_dtype} if supported, else float32 |
 | checkpoints | every {tc.ckpt_every} steps (keep last {tc.keep_last_checkpoints}) + best-by-validation-EMA |
 | evaluation after training | {cfg.evaluation['n_per_condition']} scenarios x {len(cfg.evaluation['events'])} events x {len(cfg.evaluation['severities'])} severities, learned vs procedural |

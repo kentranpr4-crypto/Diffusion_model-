@@ -78,6 +78,22 @@ Tiêu chí nghiệm thu (AC) và kết quả nằm ở phần "Báo cáo bàn gi
 5. Thời gian train trên 4090: **không biết**; bộ nhớ ước tính 1–3 GB (ESTIMATED), preflight sẽ đo thật.
 
 ### Cần chủ việc
-1. Duyệt `raresimdiff/docs/RUN_APPROVAL.md` (dataset fingerprint `b570009f…`, training hash `2236948f…`, 30.000 bước, 1 run).
+1. Duyệt `raresimdiff/docs/RUN_APPROVAL.md` (dataset fingerprint `b570009f…`, training hash `2236948f…`, 30.000 bước, 1 run). Bundle cuối: sha256 `51310dfd0b5c4c2025faa21bb345278f3bdcc2a968a2e5a1d86ec096fd55ef0e` (xem phần Release audit; con số `11292c11…` ở trên là bản trước audit, đã bị thay thế).
 2. Cung cấp humanoid MJCF/URDF nếu muốn validate humanoid thật.
 3. Xác nhận có commit/push bundle hoặc nhánh lên GitHub không (hiện chỉ commit local; `dist/`, `data/` bị `.gitignore`).
+
+## Release audit (2026-11-21, trước khi push)
+
+Kiểm tra trên **bundle sẽ push** (`raresimdiff_gpu_bundle.tar.zst`, sha256 `51310dfd0b5c4c2025faa21bb345278f3bdcc2a968a2e5a1d86ec096fd55ef0e`, 101 file, 8.913.840 byte):
+
+| Kiểm | Kết quả | Evidence |
+|---|---|---|
+| Nội dung đủ: train/val/test/ood_test, preprocessing stats, 4 manifest split, configs, source (≥ 50 file .py), scripts | PASS | `required_content_present` |
+| Hash dataset trong bundle = `dataset_manifest.json` = thư mục dataset gốc; fingerprint `b570009f46e8…` | PASS | so từng file; `verify_dataset` trên bản giải nén: 13/13 |
+| Normalization stats tính từ train (`computed_from: train`, hash khớp) | PASS | `preprocessing_stats.json` |
+| Dataset không bị đổi trong lúc audit | PASS | sha256 trước/sau trùng nhau |
+| Secret/credential/đường dẫn nhạy cảm | PASS (có allowlist đã xem xét) | quét 101 file + từng member trong `.npz`; 0 hit sau allowlist: 2 mẫu regex trong `gates.py` (chính bộ quét) và URL repo GitHub công khai trong `GPU_DEPLOY.md` (không phải credential) |
+| Dữ liệu không được phép công khai | PASS | 100 % dataset là scenario mô phỏng sinh thủ tục; trường chuỗi trong `.npz` chỉ là id `p…`; không có dữ liệu thật/cá nhân |
+| Epoch tính lại | 419,1 theo mẫu; 419,6 theo cách trainer đếm (drop-last) | global batch hiệu dụng 512 × 2 = 1024; 30.000 × 1024 = 30.720.000 mẫu / 73.295; trainer: 143 micro-batch/epoch, 60.000 micro-batch |
+
+Ghi chú: báo cáo trước ghi "≈ 420 epoch"; số chính xác là 419,1/419,6. Không đổi cấu hình model, không tạo lại dataset, không chạy GPU.
